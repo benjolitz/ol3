@@ -31,6 +31,8 @@ ol.source.Cluster = function(options) {
     projection: options.projection,
     wrapX: options.wrapX
   });
+  this._clusterCreate_func = [];
+  this._onClustersReady_funcs = [];
 
   /**
    * @type {number|undefined}
@@ -126,9 +128,17 @@ ol.source.Cluster.prototype.cluster_ = function() {
    * @type {!Object.<string, boolean>}
    */
   var clustered = {};
+  var exec_func = function (func) {
+            try {
+              func(c);
+            } catch (e) {
+              console.error(e);
+            }
+          };
 
   for (var i = 0, ii = features.length; i < ii; i++) {
     var feature = features[i];
+
     if (!(goog.getUid(feature).toString() in clustered)) {
       var geometry = this.geometryFunction_(feature);
       if (geometry) {
@@ -147,15 +157,42 @@ ol.source.Cluster.prototype.cluster_ = function() {
             return false;
           }
         });
-        this.features_.push(this.createCluster_(neighbors));
+        var c = this.createCluster_(neighbors);
+        this._clusterCreate_func.forEach(exec_func);
+        this.features_.push(c);
       }
     }
   }
+  var cluster_ready_func = (function (func) {
+      try {
+        func(this.features_);
+      } catch (err) {
+        console.error(err);
+      }
+    }).bind(this);
+
+  this._onClustersReady_funcs.forEach(cluster_ready_func);
   goog.asserts.assert(
       Object.keys(clustered).length == this.source_.getFeatures().length,
       'number of clustered equals number of features in the source');
 };
 
+
+ol.source.Cluster.prototype.addOnClustersReadyTrigger = function (clusters_func) {
+   this._onClustersReady_funcs.push(clusters_func);
+};
+
+ol.source.Cluster.prototype.addOnClusterCreateTrigger = function (cluster_func) {
+   this._clusterCreate_func.push(cluster_func);
+};
+
+ol.source.Cluster.prototype.removeOnClusterCreateTrigger = function (cluster_func) {
+  this._clusterCreate_func.pop(this._clusterCreate_func.indexOf(cluster_func));
+};
+
+ol.source.Cluster.prototype.removeOnClustersReadyTrigger = function (clusters_func) {
+  this._onClustersReady_funcs.pop(this._onClustersReady_funcs.indexOf(clusters_func));
+};
 
 /**
  * @param {Array.<ol.Feature>} features Features
