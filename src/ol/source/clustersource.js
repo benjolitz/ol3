@@ -177,15 +177,26 @@ ol.source.Cluster.prototype.cluster_ = function() {
       'number of clustered equals number of features in the source');
 };
 
-
+/**
+ * Add a function that will be fired when all the clusters are ready.
+ * @api
+ */
 ol.source.Cluster.prototype.addOnClustersReadyTrigger = function (clusters_func) {
    this._onClustersReady_funcs.push(clusters_func);
 };
 
+/**
+ * Add a function that will be fired when all an individual cluster is ready.
+ * @api
+ */
 ol.source.Cluster.prototype.addOnClusterCreateTrigger = function (cluster_func) {
    this._clusterCreate_func.push(cluster_func);
 };
 
+/**
+ * Remove a function that will be fired when all an individual cluster is ready.
+ * @api
+ */
 ol.source.Cluster.prototype.removeOnClusterCreateTrigger = function (cluster_func) {
   var index = this._clusterCreate_func.indexOf(cluster_func);
   if (index > -1) {
@@ -193,6 +204,10 @@ ol.source.Cluster.prototype.removeOnClusterCreateTrigger = function (cluster_fun
   }
 };
 
+/**
+ * Remove a function that will be fired when all the clusters are ready.
+ * @api
+ */
 ol.source.Cluster.prototype.removeOnClustersReadyTrigger = function (clusters_func) {
   var index = this._onClustersReady_funcs.indexOf(clusters_func);
   if (index > -1) {
