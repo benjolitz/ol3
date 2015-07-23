@@ -187,11 +187,17 @@ ol.source.Cluster.prototype.addOnClusterCreateTrigger = function (cluster_func) 
 };
 
 ol.source.Cluster.prototype.removeOnClusterCreateTrigger = function (cluster_func) {
-  this._clusterCreate_func.pop(this._clusterCreate_func.indexOf(cluster_func));
+  var index = this._clusterCreate_func.indexOf(cluster_func);
+  if (index > -1) {
+    this._clusterCreate_func.splice(index, 1);
+  }
 };
 
 ol.source.Cluster.prototype.removeOnClustersReadyTrigger = function (clusters_func) {
-  this._onClustersReady_funcs.pop(this._onClustersReady_funcs.indexOf(clusters_func));
+  var index = this._onClustersReady_funcs.indexOf(clusters_func);
+  if (index > -1) {
+    this._onClustersReady_funcs.splice(index, 1);
+  }
 };
 
 /**
